@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecalho('Faturamento')}"></head>
+<body>
+<header th:replace="~{fragmentos :: menu('faturamento')}"></header>
+
+<main>
+    <h2>Faturamento</h2>
+    <div th:replace="~{fragmentos :: mensagens}"></div>
+
+    <p class="vazio" th:if="${selecionada == null}">Não há ordens de serviço em aberto para faturar.</p>
+
+    <div th:if="${selecionada != null}">
+        <!-- Escolha da OS: ao trocar, a página recarrega com a OS escolhida -->
+        <form th:action="@{/faturamento}" method="get" class="linha">
+            <label>Ordem de serviço (em aberto)
+                <select name="os" onchange="this.form.submit()">
+                    <option th:each="o : ${abertas}"
+                            th:value="${o.id}"
+                            th:text="${'OS ' + o.id + ' - ' + o.veiculo.cliente.nome + ' - ' + o.veiculo.placa}"
+                            th:selected="${o.id == selecionada.id}"></option>
+                </select>
+            </label>
+        </form>
+
+        <table>
+            <thead>
+            <tr><th>Código</th><th>Peça</th><th>Qtd</th><th>Subtotal</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${selecionada.itens}">
+                <td th:text="${item.peca.codigo}"></td>
+                <td th:text="${item.peca.descricao}"></td>
+                <td th:text="${item.quantidade}"></td>
+                <td th:text="${@fmt.moeda(item.subtotal)}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(selecionada.itens)}"><td colspan="4" class="vazio">Sem peças nesta OS.</td></tr>
+            </tbody>
+        </table>
+
+        <form th:action="@{/faturamento/pagar}" method="post" class="formulario caixa">
+            <input type="hidden" name="osId" th:value="${selecionada.id}">
+            <p>Total das peças: <b th:text="${@fmt.moeda(selecionada.totalPecas)}"></b></p>
+            <p>Mão de obra: <b th:text="${@fmt.moeda(selecionada.maoDeObra)}"></b></p>
+            <p>Subtotal: <b th:text="${@fmt.moeda(selecionada.subtotal)}"></b></p>
+            <label>Desconto (R$)
+                <input type="number" id="desconto" name="desconto" value="0" step="0.01" min="0"
+                       th:attr="data-subtotal=${selecionada.subtotal}" oninput="calcular()">
+            </label>
+            <label>Forma de pagamento
+                <select name="forma">
+                    <option>Dinheiro</option>
+                    <option>Pix</option>
+                    <option>Cartão de Débito</option>
+                    <option>Cartão de Crédito</option>
+                    <option>Boleto</option>
+                </select>
+            </label>
+            <p class="total">TOTAL A PAGAR: <b id="total" th:text="${@fmt.moeda(selecionada.subtotal)}"></b></p>
+            <div class="botoes">
+                <button type="submit">Confirmar pagamento</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script>
+    // Recalcula o total na tela enquanto o desconto é digitado
+    function calcular() {
+        var campo = document.getElementById('desconto');
+        var subtotal = parseFloat(campo.getAttribute('data-subtotal'));
+        var desconto = parseFloat(campo.value) || 0;
+        var total = subtotal - desconto;
+        document.getElementById('total').textContent =
+            'R$ ' + total.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+</script>
+</body>
+</html>

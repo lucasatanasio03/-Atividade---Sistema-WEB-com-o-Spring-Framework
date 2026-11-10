@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Pedaços de HTML reaproveitados em todas as páginas -->
+
+<head th:fragment="cabecalho(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${titulo} + ' - AutoFix'">AutoFix</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+
+<body>
+
+<header th:fragment="menu(ativo)">
+    <h1>AutoFix</h1>
+    <nav>
+        <a th:href="@{/clientes}" th:classappend="${ativo == 'clientes'} ? 'ativo'">Clientes</a>
+        <a th:href="@{/veiculos}" th:classappend="${ativo == 'veiculos'} ? 'ativo'">Veículos</a>
+        <a th:href="@{/estoque}" th:classappend="${ativo == 'estoque'} ? 'ativo'">Estoque</a>
+        <a th:href="@{/ordens}" th:classappend="${ativo == 'ordens'} ? 'ativo'">Ordens de Serviço</a>
+        <a th:href="@{/faturamento}" th:classappend="${ativo == 'faturamento'} ? 'ativo'">Faturamento</a>
+    </nav>
+</header>
+
+<div th:fragment="mensagens">
+    <p class="mensagem ok" th:if="${mensagem}" th:text="${mensagem}"></p>
+    <p class="mensagem erro" th:if="${erro}" th:text="${erro}"></p>
+</div>
+
+</body>
+</html>

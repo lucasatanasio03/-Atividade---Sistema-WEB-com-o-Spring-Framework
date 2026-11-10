@@ -1,0 +1,86 @@
+/* Estilo simples */
+* { box-sizing: border-box; }
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    background: #f3f3f3;
+    color: #222;
+}
+
+header {
+    background: #2b3a4a;
+    color: #fff;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+header h1 { margin: 0; font-size: 22px; }
+nav a {
+    color: #cfd8e3;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+}
+nav a:hover { background: #3d5064; }
+nav a.ativo { background: #fff; color: #2b3a4a; font-weight: bold; }
+
+main { max-width: 1000px; margin: 20px auto; padding: 0 16px; }
+h2 { margin-top: 0; }
+
+.formulario, .caixa {
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 14px;
+    margin-bottom: 16px;
+}
+.formulario { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; }
+.formulario label { display: flex; flex-direction: column; font-size: 14px; gap: 3px; }
+.formulario .botoes, .formulario p { grid-column: 1 / -1; margin: 0; }
+.formulario p { padding: 2px 0; }
+
+input, select {
+    padding: 6px;
+    font-size: 14px;
+    border: 1px solid #999;
+    border-radius: 3px;
+}
+
+button, a.botao {
+    display: inline-block;
+    padding: 6px 14px;
+    font-size: 14px;
+    background: #e6e6e6;
+    color: #222;
+    border: 1px solid #888;
+    border-radius: 3px;
+    cursor: pointer;
+    text-decoration: none;
+}
+button:hover, a.botao:hover { background: #d4d4d4; }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+button.perigo { color: #a00; }
+.botoes { display: flex; gap: 8px; }
+
+.busca, .linha { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.busca input { flex: 1; }
+
+table { width: 100%; border-collapse: collapse; background: #fff; margin-bottom: 16px; }
+th, td { border: 1px solid #ccc; padding: 7px 9px; text-align: left; font-size: 14px; }
+th { background: #e9edf1; }
+td.acoes > * { display: inline-block; vertical-align: middle; margin: 0 6px 0 0; }
+.vazio { text-align: center; color: #777; }
+
+tr.baixo td { background: #fff5be; }
+tr.zerado td { background: #ffd7d7; }
+.status-paga { color: #1e6e32; font-weight: bold; }
+.status-aberta { color: #0050aa; font-weight: bold; }
+
+.mensagem { padding: 9px 12px; border-radius: 3px; margin: 0 0 12px; }
+.mensagem.ok { background: #dff3e3; border: 1px solid #8cc59a; }
+.mensagem.erro { background: #fde0e0; border: 1px solid #d88; }
+.mensagem.alerta { background: #fff1c9; border: 1px solid #d9b45a; }
+
+.totais, .total { font-size: 16px; }
+.total b { font-size: 20px; }

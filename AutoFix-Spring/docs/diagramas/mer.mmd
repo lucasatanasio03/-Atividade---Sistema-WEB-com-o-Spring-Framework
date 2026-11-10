@@ -1,0 +1,45 @@
+erDiagram
+    CLIENTE ||--o{ VEICULO : "possui"
+    VEICULO ||--o{ ORDEM_SERVICO : "recebe"
+    ORDEM_SERVICO ||--o{ ITEM_OS : "contém"
+    PECA ||--o{ ITEM_OS : "é usada em"
+
+    CLIENTE {
+        int id PK
+        varchar nome
+        varchar cpf UK
+        varchar telefone
+    }
+    VEICULO {
+        int id PK
+        int cliente_id FK
+        varchar placa UK
+        varchar modelo
+        int ano
+    }
+    PECA {
+        int id PK
+        varchar codigo UK
+        varchar descricao
+        int quantidade
+        int minimo
+        double preco
+    }
+    ORDEM_SERVICO {
+        int id PK "inicia em 1037"
+        int veiculo_id FK
+        varchar mecanico
+        varchar problema
+        double mao_de_obra
+        varchar status "ABERTA ou PAGA"
+        double desconto
+        varchar forma_pagamento
+        date data_abertura
+    }
+    ITEM_OS {
+        int id PK
+        int os_id FK
+        int peca_id FK
+        int quantidade
+        double valor_unitario
+    }

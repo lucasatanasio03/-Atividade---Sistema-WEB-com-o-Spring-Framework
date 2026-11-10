@@ -1,0 +1,53 @@
+classDiagram
+direction LR
+
+class Cliente {
+    -Integer id
+    -String nome
+    -String cpf
+    -String telefone
+}
+
+class Veiculo {
+    -Integer id
+    -String placa
+    -String modelo
+    -Integer ano
+}
+
+class Peca {
+    -Integer id
+    -String codigo
+    -String descricao
+    -Integer quantidade
+    -Integer minimo
+    -Double preco
+    +getSituacao() String
+}
+
+class OrdemServico {
+    -Integer id
+    -String mecanico
+    -String problema
+    -Double maoDeObra
+    -String status
+    -Double desconto
+    -String formaPagamento
+    -LocalDate dataAbertura
+    +getTotalPecas() double
+    +getSubtotal() double
+    +getTotal() double
+    +isPaga() boolean
+}
+
+class ItemOS {
+    -Integer id
+    -Integer quantidade
+    -Double valorUnitario
+    +getSubtotal() double
+}
+
+Cliente "1" --> "0..*" Veiculo : possui
+Veiculo "1" --> "0..*" OrdemServico : recebe
+OrdemServico "1" *-- "0..*" ItemOS : contém
+Peca "1" --> "0..*" ItemOS : é usada em

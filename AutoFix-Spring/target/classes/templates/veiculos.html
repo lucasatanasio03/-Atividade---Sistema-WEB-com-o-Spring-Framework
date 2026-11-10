@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecalho('Veículos')}"></head>
+<body>
+<header th:replace="~{fragmentos :: menu('veiculos')}"></header>
+
+<main>
+    <h2>Veículos</h2>
+    <div th:replace="~{fragmentos :: mensagens}"></div>
+
+    <form th:action="@{/veiculos/salvar}" th:object="${veiculo}" method="post" class="formulario">
+        <input type="hidden" th:field="*{id}">
+        <label>Cliente (dono)
+            <select name="clienteId" required>
+                <option th:each="c : ${clientes}"
+                        th:value="${c.id}"
+                        th:text="${c.nome}"
+                        th:selected="${veiculo.cliente != null and veiculo.cliente.id == c.id}"></option>
+            </select>
+        </label>
+        <label>Placa
+            <input type="text" th:field="*{placa}" required>
+        </label>
+        <label>Modelo
+            <input type="text" th:field="*{modelo}" required>
+        </label>
+        <label>Ano
+            <input type="number" th:field="*{ano}" min="1900" max="2100">
+        </label>
+        <div class="botoes">
+            <button type="submit">Salvar</button>
+            <a class="botao" th:href="@{/veiculos}">Novo</a>
+        </div>
+    </form>
+
+    <form th:action="@{/veiculos}" method="get" class="busca">
+        <input type="text" name="busca" th:value="${busca}" placeholder="Buscar por placa, modelo ou cliente">
+        <button type="submit">Buscar</button>
+    </form>
+
+    <table>
+        <thead>
+        <tr><th>Placa</th><th>Modelo</th><th>Ano</th><th>Cliente</th><th>Ações</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="v : ${lista}">
+            <td th:text="${v.placa}"></td>
+            <td th:text="${v.modelo}"></td>
+            <td th:text="${v.ano}"></td>
+            <td th:text="${v.cliente.nome}"></td>
+            <td class="acoes">
+                <a class="botao" th:href="@{/veiculos(editar=${v.id})}">Editar</a>
+                <form th:action="@{/veiculos/{id}/excluir(id=${v.id})}" method="post"
+                      onsubmit="return confirm('Excluir este veículo?')">
+                    <button type="submit" class="perigo">Excluir</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(lista)}"><td colspan="5" class="vazio">Nenhum veículo encontrado.</td></tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

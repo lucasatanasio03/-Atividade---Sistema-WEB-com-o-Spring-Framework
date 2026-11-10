@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecalho('Ordens de Serviço')}"></head>
+<body>
+<header th:replace="~{fragmentos :: menu('ordens')}"></header>
+
+<main>
+    <h2 th:text="${os.id == null} ? 'Ordens de Serviço - Nova OS' : 'Ordens de Serviço - OS ' + ${os.id}"></h2>
+    <div th:replace="~{fragmentos :: mensagens}"></div>
+    <p class="mensagem alerta" th:if="${os.paga}">Esta OS já foi paga e não pode mais ser alterada.</p>
+
+    <!-- Dados da OS -->
+    <form th:action="@{/ordens/salvar}" method="post" class="formulario">
+        <input type="hidden" name="id" th:value="${os.id}">
+        <label>Veículo
+            <select name="veiculoId" required>
+                <option th:each="v : ${veiculos}"
+                        th:value="${v.id}"
+                        th:text="${v.placa + ' - ' + v.modelo + ' (' + v.cliente.nome + ')'}"
+                        th:selected="${os.veiculo != null and os.veiculo.id == v.id}"></option>
+            </select>
+        </label>
+        <label>Mecânico
+            <input type="text" name="mecanico" th:value="${os.mecanico}">
+        </label>
+        <label>Problema relatado
+            <input type="text" name="problema" th:value="${os.problema}">
+        </label>
+        <label>Mão de obra (R$)
+            <input type="number" name="maoDeObra" step="0.01" min="0" th:value="${os.maoDeObra}">
+        </label>
+        <div class="botoes">
+            <button type="submit" th:disabled="${os.paga}">Salvar OS</button>
+            <a class="botao" th:href="@{/ordens}">Nova OS</a>
+        </div>
+    </form>
+    <form th:if="${os.id != null and !os.paga}" th:action="@{/ordens/{id}/excluir(id=${os.id})}" method="post"
+          onsubmit="return confirm('Excluir esta OS? As peças voltam para o estoque.')">
+        <button type="submit" class="perigo">Excluir esta OS</button>
+    </form>
+
+    <!-- Peças da OS (só aparece depois que a OS existe) -->
+    <section class="caixa" th:if="${os.id != null}">
+        <h3>Peças da OS</h3>
+
+        <form th:if="${!os.paga}" th:action="@{/ordens/{id}/itens(id=${os.id})}" method="post" class="linha">
+            <select name="pecaId" required>
+                <option th:each="p : ${pecas}"
+                        th:value="${p.id}"
+                        th:text="${p.codigo + ' - ' + p.descricao + ' (estoque: ' + p.quantidade + ')'}"></option>
+            </select>
+            <input type="number" name="quantidade" value="1" min="1" required>
+            <button type="submit">Adicionar peça</button>
+        </form>
+
+        <table>
+            <thead>
+            <tr><th>Código</th><th>Peça</th><th>Qtd</th><th>Valor unit.</th><th>Subtotal</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${os.itens}">
+                <td th:text="${item.peca.codigo}"></td>
+                <td th:text="${item.peca.descricao}"></td>
+                <td th:text="${item.quantidade}"></td>
+                <td th:text="${@fmt.moeda(item.valorUnitario)}"></td>
+                <td th:text="${@fmt.moeda(item.subtotal)}"></td>
+                <td class="acoes">
+                    <form th:if="${!os.paga}"
+                          th:action="@{/ordens/{id}/itens/{itemId}/remover(id=${os.id},itemId=${item.id})}" method="post">
+                        <button type="submit" class="perigo">Remover</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(os.itens)}"><td colspan="6" class="vazio">Nenhuma peça nesta OS.</td></tr>
+            </tbody>
+        </table>
+
+        <p class="totais">
+            Peças: <b th:text="${@fmt.moeda(os.totalPecas)}"></b> |
+            Mão de obra: <b th:text="${@fmt.moeda(os.maoDeObra)}"></b> |
+            TOTAL: <b th:text="${@fmt.moeda(os.subtotal)}"></b>
+        </p>
+    </section>
+
+    <!-- Lista de todas as OS -->
+    <h3>Todas as ordens de serviço</h3>
+    <table>
+        <thead>
+        <tr><th>Nº OS</th><th>Data</th><th>Cliente</th><th>Veículo</th><th>Mecânico</th><th>Status</th><th>Total</th><th></th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="o : ${lista}">
+            <td th:text="${o.id}"></td>
+            <td th:text="${o.dataFormatada}"></td>
+            <td th:text="${o.veiculo.cliente.nome}"></td>
+            <td th:text="${o.veiculo.placa + ' - ' + o.veiculo.modelo}"></td>
+            <td th:text="${o.mecanico}"></td>
+            <td th:text="${o.paga} ? 'Paga' : 'Aberta'" th:class="${o.paga} ? 'status-paga' : 'status-aberta'"></td>
+            <td th:text="${@fmt.moeda(o.total)}"></td>
+            <td class="acoes"><a class="botao" th:href="@{/ordens(editar=${o.id})}">Abrir</a></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(lista)}"><td colspan="8" class="vazio">Nenhuma OS cadastrada.</td></tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

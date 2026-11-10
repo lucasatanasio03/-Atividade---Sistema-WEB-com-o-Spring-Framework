@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecalho('Clientes')}"></head>
+<body>
+<header th:replace="~{fragmentos :: menu('clientes')}"></header>
+
+<main>
+    <h2>Clientes</h2>
+    <div th:replace="~{fragmentos :: mensagens}"></div>
+
+    <!-- Formulário (novo cliente ou edição) -->
+    <form th:action="@{/clientes/salvar}" th:object="${cliente}" method="post" class="formulario">
+        <input type="hidden" th:field="*{id}">
+        <label>Nome
+            <input type="text" th:field="*{nome}" required>
+        </label>
+        <label>CPF/CNPJ
+            <input type="text" th:field="*{cpf}">
+        </label>
+        <label>Telefone
+            <input type="text" th:field="*{telefone}">
+        </label>
+        <div class="botoes">
+            <button type="submit">Salvar</button>
+            <a class="botao" th:href="@{/clientes}">Novo</a>
+        </div>
+    </form>
+
+    <!-- Busca -->
+    <form th:action="@{/clientes}" method="get" class="busca">
+        <input type="text" name="busca" th:value="${busca}" placeholder="Buscar por nome, CPF/CNPJ ou telefone">
+        <button type="submit">Buscar</button>
+    </form>
+
+    <!-- Lista -->
+    <table>
+        <thead>
+        <tr><th>Nome</th><th>CPF/CNPJ</th><th>Telefone</th><th>Ações</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="c : ${lista}">
+            <td th:text="${c.nome}"></td>
+            <td th:text="${c.cpf}"></td>
+            <td th:text="${c.telefone}"></td>
+            <td class="acoes">
+                <a class="botao" th:href="@{/clientes(editar=${c.id})}">Editar</a>
+                <form th:action="@{/clientes/{id}/excluir(id=${c.id})}" method="post"
+                      onsubmit="return confirm('Excluir este cliente?')">
+                    <button type="submit" class="perigo">Excluir</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(lista)}"><td colspan="4" class="vazio">Nenhum cliente encontrado.</td></tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>
